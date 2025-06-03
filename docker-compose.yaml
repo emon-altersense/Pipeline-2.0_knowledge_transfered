@@ -1,0 +1,107 @@
+x-common:
+  &kafka-common
+  image: bitnami/kafka:3.9.0
+  environment: &kafka-env
+    # Listeners
+    KAFKA_CFG_PROCESS_ROLES: broker,controller
+    KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP: CONTROLLER:PLAINTEXT,EXTERNAL:PLAINTEXT,PLAINTEXT:PLAINTEXT
+    KAFKA_CFG_CONTROLLER_LISTENER_NAMES: CONTROLLER
+    KAFKA_CFG_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+    KAFKA_CFG_CONTROLLER_QUORUM_VOTERS: 0@kafka-0:9093,1@kafka-1:9093,2@kafka-2:9093,3@kafka-3:9093,4@kafka-4:9093
+    # KRaft
+    KAFKA_KRAFT_CLUSTER_ID: 'kafka_cluster_als_helios'
+    # Message
+    KAFKA_CFG_MESSAGE_MAX_BYTES: 419430400
+    KAFKA_CFG_CONTROLLER_QUORUM_APPEND_LINGER_MS: 5
+    KAFKA_CFG_QUEUED_MAX_REQUESTS: 3000
+    # Log
+    KAFKA_CFG_LOG_FLUSH_INTERVAL_MESSAGES: 10000
+    KAFKA_CFG_LOG_FLUSH_INTERVAL_MS: 1000
+    # Network
+    KAFKA_CFG_NUM_NETWORK_THREADS: 8
+    KAFKA_CFG_NUM_IO_THREADS: 8
+    KAFKA_CFG_SOCKET_RECEIVE_BUFFER_BYTES: 8388608
+    KAFKA_CFG_SOCKET_REQUEST_MAX_BYTES: 419430400
+    KAFKA_CFG_SOCKET_SEND_BUFFER_BYTES: 8388608
+    # Configs
+    KAFKA_CFG_AUTO_CREATE_TOPICS_ENABLE: true
+    KAFKA_CFG_NUM_PARTITIONS: 10
+    ALLOW_PLAINTEXT_LISTENER: yes
+    # Retention
+    KAFKA_CFG_LOG_RETENTION_MS: 300000
+    KAFKA_CFG_LOG_DELETE_RETENTION_MS: 300000
+    KAFKA_CFG_LOG_RETENTION_CHECK_INTERVAL_MS: 5000
+    KAFKA_CFG_LOG_SEGMENT_MS: 10000
+    KAFKA_CFG_CLEANUP_POLICY: delete
+
+
+services:
+
+  ### Apache Kafka
+  kafka-0:
+    <<: *kafka-common
+    ports:
+      - "9094:9094"
+    environment:
+      KAFKA_CFG_NODE_ID: 0
+      KAFKA_CFG_LISTENERS: PLAINTEXT://:9092,CONTROLLER://:9093,EXTERNAL://:9094
+      KAFKA_CFG_ADVERTISED_LISTENERS: PLAINTEXT://:9092,EXTERNAL://localhost:9094
+      <<: *kafka-env
+
+  kafka-1:
+    <<: *kafka-common
+    ports:
+      - "9095:9095"
+    environment:
+      KAFKA_CFG_NODE_ID: 1
+      KAFKA_CFG_LISTENERS: PLAINTEXT://:9092,CONTROLLER://:9093,EXTERNAL://:9095
+      KAFKA_CFG_ADVERTISED_LISTENERS: PLAINTEXT://:9092,EXTERNAL://localhost:9095
+      <<: *kafka-env
+
+  kafka-2:
+    <<: *kafka-common
+    ports:
+      - "9096:9096"
+    environment:
+      KAFKA_CFG_NODE_ID: 2
+      KAFKA_CFG_LISTENERS: PLAINTEXT://:9092,CONTROLLER://:9093,EXTERNAL://:9096
+      KAFKA_CFG_ADVERTISED_LISTENERS: PLAINTEXT://:9092,EXTERNAL://localhost:9096
+      <<: *kafka-env
+
+  kafka-3:
+    <<: *kafka-common
+    ports:
+      - "9097:9097"
+    environment:
+      KAFKA_CFG_NODE_ID: 3
+      KAFKA_CFG_LISTENERS: PLAINTEXT://:9092,CONTROLLER://:9093,EXTERNAL://:9097
+      KAFKA_CFG_ADVERTISED_LISTENERS: PLAINTEXT://:9092,EXTERNAL://localhost:9097
+      <<: *kafka-env
+
+  kafka-4:
+    <<: *kafka-common
+    ports:
+      - "9098:9098"
+    environment:
+      KAFKA_CFG_NODE_ID: 4
+      KAFKA_CFG_LISTENERS: PLAINTEXT://:9092,CONTROLLER://:9093,EXTERNAL://:9098
+      KAFKA_CFG_ADVERTISED_LISTENERS: PLAINTEXT://:9092,EXTERNAL://localhost:9098
+      <<: *kafka-env
+
+  ### Kafka Dashboard
+  kafka-ui:
+    container_name: kafka-ui
+    image: provectuslabs/kafka-ui:v0.7.2
+    depends_on:
+      - kafka-0
+    ports:
+      - "32000:8080"
+    environment:
+      KAFKA_CLUSTERS_0_NAME: local
+      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka-0:9092
+
+  ### MongoDB
+  mongodb:
+    image: bitnami/mongodb:8.0
+    ports:
+      - "27017:27017"

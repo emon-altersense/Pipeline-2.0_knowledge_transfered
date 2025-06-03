@@ -1,0 +1,5 @@
+motor
+confluent-kafka
+numpy
+opencv-python-headless
+dask[distributed]
