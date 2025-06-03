@@ -42,3 +42,4 @@ Stream Service -> [Apache Kafka] -> Preprocessor Service -> [Data Warehouse]
 ```
 [Data Warehouse] -> Model Service -> [Apache Kafka] -> Data Engineering -> [MongoDB Atlas]
 ```
+`Check Readme_emon.md` for more detailed readme and https://drive.google.com/drive/folders/1OHA2INQ23XNCXX-YH-pmn8y304sJkjAj?usp=sharing for the whole repo with model and screen recording
