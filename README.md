@@ -42,8 +42,3 @@ Stream Service -> [Apache Kafka] -> Preprocessor Service -> [Data Warehouse]
 ```
 [Data Warehouse] -> Model Service -> [Apache Kafka] -> Data Engineering -> [MongoDB Atlas]
 ```
-
-
-==========
-kafka dashboard localhost:32000
-mongo dashboard go to mongocompus and connect the localhost, then activity db
